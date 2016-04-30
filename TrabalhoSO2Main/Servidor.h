@@ -16,7 +16,7 @@ public:
 	~Servidor();
 	int loop();
 
-	DWORD WINAPI InstanceThread(LPVOID lpvParam);
-	VOID GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pchBytes);
+	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
+	static VOID GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pchBytes);
 };
 

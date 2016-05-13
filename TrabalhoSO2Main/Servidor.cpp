@@ -195,9 +195,15 @@ VOID Servidor::GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pc
 	// and receive other client connections while the instance thread is working.
 {
 	_tprintf(TEXT("Client Request String:\"%s\"\n"), pchRequest);
+	STRSAFE_LPCWSTR temp = TEXT("Comando não reconhecido");
+
+	if (lstrcmp(pchRequest, L"jogar") == 0)
+	{
+		temp = TEXT("A iniciar jogo...");
+	}
 
 	// Check the outgoing message to make sure it's not too long for the buffer.
-	if (FAILED(StringCchCopy(pchReply, BUFSIZE, TEXT("default answer from server"))))
+	if (FAILED(StringCchCopy(pchReply, BUFSIZE, temp)))
 	{
 		*pchBytes = 0;
 		pchReply[0] = 0;

@@ -3,6 +3,7 @@
 #include <stdio.h> 
 #include <tchar.h>
 #include <strsafe.h>
+#include "Utils.h"
 
 #define BUFSIZE 512
 
@@ -11,6 +12,8 @@ VOID GetAnswerToRequest(LPTSTR, LPTSTR, LPDWORD);
 
 class Servidor
 {
+private:
+	Jogo jogo;
 public:
 	Servidor();
 	~Servidor();

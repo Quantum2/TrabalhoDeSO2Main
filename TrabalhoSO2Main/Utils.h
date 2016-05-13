@@ -1,11 +1,25 @@
 #pragma once
 #include <vector>
+#include <iostream>
+#include <string>
 
 using namespace std;
 
-class Jogador{};
+class Jogador
+{
+private:
 
-class Labirinto{};
+public:
+
+};
+
+class Labirinto
+{
+private:
+
+public:
+
+};
 
 class Jogo {
 private:
@@ -13,6 +27,11 @@ private:
 	Labirinto lab;
 	vector<Jogador> jogadores;
 public:
+	Jogo();
+	~Jogo();
+
+	string lastCommand;
+
 	const int A_PROCURAR_CLIENTES = 1;
 	const int A_INICIAR_JOGO = 2;
 	const int A_JOGAR = 3;

@@ -1,5 +1,7 @@
 #include "Servidor.h"
 
+static Jogo jogo;
+
 Servidor::Servidor()
 {
 }
@@ -61,6 +63,8 @@ int Servidor::loop() {
 				0,                 // not suspended 
 				&dwThreadId);      // returns thread ID 
 
+			numThreads++;
+
 			if (hThread == NULL)
 			{
 				_tprintf(TEXT("CreateThread failed, GLE=%d.\n"), GetLastError());
@@ -84,8 +88,10 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 // client connections.
 {
 	HANDLE hHeap = GetProcessHeap();
-	TCHAR* pchRequest = (TCHAR*)HeapAlloc(hHeap, 0, BUFSIZE*sizeof(TCHAR));
-	TCHAR* pchReply = (TCHAR*)HeapAlloc(hHeap, 0, BUFSIZE*sizeof(TCHAR));
+	//TCHAR* pchRequest = (TCHAR*)HeapAlloc(hHeap, 0, BUFSIZE*sizeof(TCHAR));
+	Mensagem pchRequest;
+	Mensagem pchReply;
+	strcpy(pchReply.msg, "empty");
 
 	DWORD cbBytesRead = 0, cbReplyBytes = 0, cbWritten = 0;
 	BOOL fSuccess = FALSE;
@@ -99,26 +105,7 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 		printf("\nERROR - Pipe Server Failure:\n");
 		printf("   InstanceThread got an unexpected NULL value in lpvParam.\n");
 		printf("   InstanceThread exitting.\n");
-		if (pchReply != NULL) HeapFree(hHeap, 0, pchReply);
-		if (pchRequest != NULL) HeapFree(hHeap, 0, pchRequest);
-		return (DWORD)-1;
-	}
-
-	if (pchRequest == NULL)
-	{
-		printf("\nERROR - Pipe Server Failure:\n");
-		printf("   InstanceThread got an unexpected NULL heap allocation.\n");
-		printf("   InstanceThread exitting.\n");
-		if (pchReply != NULL) HeapFree(hHeap, 0, pchReply);
-		return (DWORD)-1;
-	}
-
-	if (pchReply == NULL)
-	{
-		printf("\nERROR - Pipe Server Failure:\n");
-		printf("   InstanceThread got an unexpected NULL heap allocation.\n");
-		printf("   InstanceThread exitting.\n");
-		if (pchRequest != NULL) HeapFree(hHeap, 0, pchRequest);
+		//if (pchReply != NULL) HeapFree(hHeap, 0, pchReply);
 		return (DWORD)-1;
 	}
 
@@ -136,7 +123,7 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 		// up to BUFSIZE characters in length.
 		fSuccess = ReadFile(
 			hPipe,        // handle to pipe 
-			pchRequest,    // buffer to receive data 
+			&pchRequest,    // buffer to receive data 
 			BUFSIZE*sizeof(TCHAR), // size of buffer 
 			&cbBytesRead, // number of bytes read 
 			NULL);        // not overlapped I/O 
@@ -155,12 +142,12 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 		}
 
 		// Process the incoming message.
-		GetAnswerToRequest(pchRequest, pchReply, &cbReplyBytes);
+		pchReply = GetAnswerToRequest(pchRequest, pchReply, &cbReplyBytes);
 
 		// Write the reply to the pipe. 
 		fSuccess = WriteFile(
 			hPipe,        // handle to pipe 
-			pchReply,     // buffer to write from 
+			&pchReply,     // buffer to write from 
 			cbReplyBytes, // number of bytes to write 
 			&cbWritten,   // number of bytes written 
 			NULL);        // not overlapped I/O 
@@ -180,36 +167,26 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 	DisconnectNamedPipe(hPipe);
 	CloseHandle(hPipe);
 
-	HeapFree(hHeap, 0, pchRequest);
-	HeapFree(hHeap, 0, pchReply);
+	//HeapFree(hHeap, 0, pchRequest);
+	//HeapFree(hHeap, 0, pchReply);
 
 	printf("InstanceThread exitting.\n");
 	return 1;
 }
 
-VOID Servidor::GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pchBytes)
+Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes)
 	// This routine is a simple function to print the client request to the console
 	// and populate the reply buffer with a default data string. This is where you
 	// would put the actual client request processing code that runs in the context
 	// of an instance thread. Keep in mind the main thread will continue to wait for
 	// and receive other client connections while the instance thread is working.
 {
-	_tprintf(TEXT("Client Request String:\"%s\"\n"), pchRequest);
-	STRSAFE_LPCWSTR temp = TEXT("Comando não reconhecido");
+	printf("Client Request String:\"%s\"\n", pchRequest.msg);
+	string temp = "Comando não reconhecido";
 
-	if (lstrcmp(pchRequest, L"jogar") == 0)
-	{
-		temp = TEXT("A iniciar jogo...");
-	}
+	strcpy(pchReply.msg, temp.c_str());
+	*pchBytes = sizeof(pchReply);
 
-	// Check the outgoing message to make sure it's not too long for the buffer.
-	if (FAILED(StringCchCopy(pchReply, BUFSIZE, temp)))
-	{
-		*pchBytes = 0;
-		pchReply[0] = 0;
-		printf("StringCchCopy failed, no outgoing message.\n");
-		return;
-	}
-	*pchBytes = (lstrlen(pchReply) + 1)*sizeof(TCHAR);
+	return pchReply;
 }
 

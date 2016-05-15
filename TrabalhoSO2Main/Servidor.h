@@ -3,23 +3,22 @@
 #include <stdio.h> 
 #include <tchar.h>
 #include <strsafe.h>
+#include <signal.h>
 #include "Utils.h"
 
 #define BUFSIZE 512
 
-DWORD WINAPI InstanceThread(LPVOID);
-VOID GetAnswerToRequest(LPTSTR, LPTSTR, LPDWORD);
-
 class Servidor
 {
 private:
-	Jogo jogo;
+	int numThreads = 0;
+	bool enviarTodos = false;
 public:
 	Servidor();
 	~Servidor();
 	int loop();
 
 	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
-	static VOID GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pchBytes);
+	static Mensagem GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes);
 };
 

@@ -23,7 +23,7 @@ public:
 
 class Jogo {
 private:
-	int estado;
+	int estado = 1;
 	Labirinto lab;
 	vector<Jogador> jogadores;
 public:
@@ -38,4 +38,9 @@ public:
 
 	void setEstado(int e);
 	int getEstado();
+};
+
+struct Mensagem {
+	int pid;
+	char msg[BUFSIZ];
 };

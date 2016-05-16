@@ -17,3 +17,13 @@ int Jogo::getEstado()
 {
 	return estado;
 }
+
+Jogador::Jogador(string nome, int p)
+{
+	name = nome;
+	pid = p;
+}
+
+Jogador::~Jogador()
+{
+}

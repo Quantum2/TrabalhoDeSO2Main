@@ -4,6 +4,9 @@
 #include <tchar.h>
 #include <strsafe.h>
 #include <signal.h>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 #include "Utils.h"
 
 #define BUFSIZE 512
@@ -20,5 +23,6 @@ public:
 
 	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
 	static Mensagem GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes);
+	static VOID MandarATodosJogadores(Mensagem pchReply, vector<Jogador> lista);
 };
 

@@ -182,11 +182,28 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	// and receive other client connections while the instance thread is working.
 {
 	printf("Client Request String:\"%s\"\n", pchRequest.msg);
+	string entrada(pchRequest.msg);
 	string temp = "Comando não reconhecido";
+
+	istringstream iss(entrada);
+	vector<string> tokens{ istream_iterator<string>{iss},            //Separador super elegante pls http://stackoverflow.com/questions/236129/split-a-string-in-c
+		istream_iterator<string>{} };
+
+	if (tokens[0] == "login") {
+		temp = "A fazer login...";
+		Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);
+		jogo.jogadores.push_back(*temp_jogar);
+	}
 
 	strcpy(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 
 	return pchReply;
+}
+
+VOID Servidor::MandarATodosJogadores(Mensagem pchReply, vector<Jogador> lista)
+{
+
+	return VOID();
 }
 

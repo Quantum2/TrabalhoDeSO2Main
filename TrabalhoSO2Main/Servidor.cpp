@@ -224,9 +224,14 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		tokens.push_back("empty string");
 
 	if (tokens[0] == "login") {
-		temp = "A fazer login...";
-		Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);
-		jogo.jogadores.push_back(*temp_jogar);
+		if (jogo.getEstado() == jogo.A_PROCURAR_CLIENTES) {
+			temp = "A fazer login...";
+			Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);
+			jogo.jogadores.push_back(*temp_jogar);
+		}
+		else {
+			temp = "O servidor já tem um jogo a decorrer ou a iniciar";
+		}
 	}
 	if (tokens[0] == "jogar") {
 		bool encontrado = false;
@@ -243,6 +248,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				globalM.pidsEnviar[i] = jogo.jogadores[i].getPid();
 			}
 			enviarTodos = true;
+			jogo.setEstado(jogo.A_JOGAR);
 		}
 		else {
 			temp = "Jogador não logado";
@@ -274,6 +280,7 @@ DWORD Servidor::threadGlobal(LPVOID lpvParam)
 
 	while (true)
 	{
+		mtx.lock();
 		for (size_t i = 0; i < jogo.jogadores.size(); i++)
 		{
 			if (jogo.jogadores[i].getPid() == temp) {
@@ -298,6 +305,7 @@ DWORD Servidor::threadGlobal(LPVOID lpvParam)
 				break;
 			}
 		}
+		mtx.unlock();
 	}
 
 	FlushFileBuffers(hPipeGeral);

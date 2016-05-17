@@ -220,6 +220,9 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	vector<string> tokens{ istream_iterator<string>{iss},               //Separador super elegante pls http://stackoverflow.com/questions/236129/split-a-string-in-c
 		istream_iterator<string>{} };
 
+	if (tokens.size() == 0)
+		tokens.push_back("empty string");
+
 	if (tokens[0] == "login") {
 		temp = "A fazer login...";
 		Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);

@@ -14,15 +14,11 @@
 class Servidor
 {
 private:
-	int numThreads = 0;
-	bool enviarTodos = false;
+	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
+	static Mensagem GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes);
+	static DWORD WINAPI threadGlobal(LPVOID lpvParam);
 public:
 	Servidor();
 	~Servidor();
 	int loop();
-
-	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
-	static Mensagem GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes);
-	static VOID MandarATodosJogadores(Mensagem pchReply, vector<Jogador> lista);
 };
-

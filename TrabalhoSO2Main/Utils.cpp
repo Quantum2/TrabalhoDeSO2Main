@@ -27,3 +27,8 @@ Jogador::Jogador(string nome, int p)
 Jogador::~Jogador()
 {
 }
+
+int Jogador::getPid()
+{
+	return pid;
+}

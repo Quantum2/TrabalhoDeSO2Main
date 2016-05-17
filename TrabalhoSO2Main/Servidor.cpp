@@ -2,7 +2,8 @@
 
 static Jogo jogo;
 static mutex mtx;
-static HANDLE hPipeGeral;
+static bool enviarTodos = false;
+static Mensagem globalM;
 
 Servidor::Servidor()
 {
@@ -15,7 +16,7 @@ Servidor::~Servidor()
 int Servidor::loop() {
 	BOOL   fConnected = FALSE;
 	DWORD  dwThreadId = 0;
-	HANDLE hPipe = INVALID_HANDLE_VALUE, hThread = NULL;
+	HANDLE hPipe = INVALID_HANDLE_VALUE, hPipeGeral = INVALID_HANDLE_VALUE, hThread = NULL, hThread2 = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
 	LPTSTR lpszPipenameGeral = TEXT("\\\\.\\pipe\\pipeGeral");
 
@@ -82,14 +83,28 @@ int Servidor::loop() {
 				0,                 // not suspended 
 				&dwThreadId);      // returns thread ID 
 
-			numThreads++;
-
 			if (hThread == NULL)
 			{
 				_tprintf(TEXT("CreateThread failed, GLE=%d.\n"), GetLastError());
 				return -1;
 			}
 			else CloseHandle(hThread);
+
+			// Create a thread for this client, again... 
+			hThread2 = CreateThread(
+				NULL,              // no security attribute 
+				0,                 // default stack size 
+				threadGlobal,    // thread proc
+				(LPVOID)hPipeGeral,    // thread parameter 
+				0,                 // not suspended 
+				&dwThreadId);      // returns thread ID 
+
+			if (hThread2 == NULL)
+			{
+				_tprintf(TEXT("CreateThreadGlobal failed, GLE=%d.\n"), GetLastError());
+				return -1;
+			}
+			else CloseHandle(hThread2);
 		}
 		else
 			// The client could not connect, so close the pipe. 
@@ -107,9 +122,9 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 // client connections.
 {
 	HANDLE hHeap = GetProcessHeap();
-	Mensagem pchRequest;
-	Mensagem pchReply;
+	Mensagem pchRequest, pchReply, pchGlobal;
 	strcpy(pchReply.msg, "empty");
+	strcpy(pchGlobal.msg, "empty");
 
 	DWORD cbBytesRead = 0, cbReplyBytes = 0, cbWritten = 0;
 	BOOL fSuccess = FALSE;
@@ -130,7 +145,6 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 	printf("InstanceThread created, receiving and processing messages.\n");
 
 	// The thread's parameter is a handle to a pipe object instance. 
-
 	hPipe = (HANDLE)lpvParam;
 
 	// Loop until done reading
@@ -141,7 +155,7 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 		fSuccess = ReadFile(
 			hPipe,        // handle to pipe 
 			&pchRequest,    // buffer to receive data 
-			BUFSIZE*sizeof(TCHAR), // size of buffer 
+			sizeof(Mensagem), // size of buffer 
 			&cbBytesRead, // number of bytes read 
 			NULL);        // not overlapped I/O 
 
@@ -192,19 +206,18 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 }
 
 Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes)
-	// This routine is a simple function to print the client request to the console
-	// and populate the reply buffer with a default data string. This is where you
-	// would put the actual client request processing code that runs in the context
-	// of an instance thread. Keep in mind the main thread will continue to wait for
-	// and receive other client connections while the instance thread is working.
+// This routine is a simple function to print the client request to the console
+// and populate the reply buffer with a default data string. This is where you
+// would put the actual client request processing code that runs in the context
+// of an instance thread. Keep in mind the main thread will continue to wait for
+// and receive other client connections while the instance thread is working.
 {
-	mtx.lock();
 	printf("Client Request String:\"%s\"\n", pchRequest.msg);
 	string entrada(pchRequest.msg);
 	string temp = "Comando não reconhecido";
 
 	istringstream iss(entrada);
-	vector<string> tokens{ istream_iterator<string>{iss},            //Separador super elegante pls http://stackoverflow.com/questions/236129/split-a-string-in-c
+	vector<string> tokens{ istream_iterator<string>{iss},               //Separador super elegante pls http://stackoverflow.com/questions/236129/split-a-string-in-c
 		istream_iterator<string>{} };
 
 	if (tokens[0] == "login") {
@@ -213,36 +226,81 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		jogo.jogadores.push_back(*temp_jogar);
 	}
 	if (tokens[0] == "jogar") {
-		temp = "A iniciar jogo...";
-		Mensagem tempMensagem;
-		strcpy_s(tempMensagem.msg, "JOGO!!!");
-		MandarATodosJogadores(tempMensagem, jogo.jogadores);
+		bool encontrado = false;
+
+		for (int i = 0; i < jogo.jogadores.size(); i++) {
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+				encontrado = true;
+		}
+
+		if (encontrado) {
+			temp = "A iniciar jogo...";
+			strcpy_s(globalM.msg, "EM FASE DE JOGO!!!");
+			for (int i = 0; i < jogo.jogadores.size(); i++) {
+				globalM.pidsEnviar[i] = jogo.jogadores[i].getPid();
+			}
+			enviarTodos = true;
+		}
+		else {
+			temp = "Jogador não logado";
+		}
+	}
+	if (tokens[0] == "terminar") {
+		temp = "A terminar jogo...";
+		strcpy_s(globalM.msg, "EM FASE DE SAIR!!!");
+		enviarTodos = true;
 	}
 
 	strcpy(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 
-	mtx.unlock();
 	return pchReply;
 }
 
-VOID Servidor::MandarATodosJogadores(Mensagem pchReply, vector<Jogador> lista)
+DWORD Servidor::threadGlobal(LPVOID lpvParam)
 {
-	DWORD cbWritten;
-	size_t cbReplyBytes = sizeof(pchReply);
+	HANDLE hPipeGeral = NULL;
+	DWORD cbWritten, cbReplyBytes;
+	bool fSuccess, enviarParaEste = false;
+	PULONG pidThis = new ULONG;
+	unsigned long temp;
 
-	bool fSuccess = WriteFile(
-		hPipeGeral,        // handle to pipe 
-		&pchReply,     // buffer to write from 
-		cbReplyBytes, // number of bytes to write 
-		&cbWritten,   // number of bytes written 
-		NULL);        // not overlapped I/O 
+	hPipeGeral = (HANDLE)lpvParam;
+	GetNamedPipeClientProcessId(hPipeGeral, pidThis);
+	temp = *pidThis;
 
-	if (!fSuccess || cbReplyBytes != cbWritten)
+	while (true)
 	{
-		_tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
-	}
-	
-	FlushFileBuffers(hPipeGeral);
-}
+		for (size_t i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if (jogo.jogadores[i].getPid() == temp) {
+				enviarParaEste = true;
+			}
+		}
 
+		if (enviarTodos == true && enviarParaEste == true) {
+			cbReplyBytes = sizeof(globalM);
+
+			// Write the reply to the pipe. 
+			fSuccess = WriteFile(
+				hPipeGeral,        // handle to pipe 
+				&globalM,     // buffer to write from 
+				sizeof(globalM), // number of bytes to write 
+				&cbWritten,   // number of bytes written 
+				NULL);        // not overlapped I/O 
+
+			if (!fSuccess || cbReplyBytes != cbWritten)
+			{
+				_tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
+				break;
+			}
+		}
+	}
+
+	FlushFileBuffers(hPipeGeral);
+	DisconnectNamedPipe(hPipeGeral);
+	CloseHandle(hPipeGeral);
+
+	printf("GlobalThread exitting.\n");
+	return 1;
+}

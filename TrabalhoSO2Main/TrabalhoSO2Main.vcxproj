@@ -142,11 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Consola.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Servidor.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Consola.h" />
     <ClInclude Include="Servidor.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

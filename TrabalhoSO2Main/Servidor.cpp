@@ -1,6 +1,8 @@
 #include "Servidor.h"
 
 static Jogo jogo;
+static mutex mtx;
+static HANDLE hPipeGeral;
 
 Servidor::Servidor()
 {
@@ -15,13 +17,13 @@ int Servidor::loop() {
 	DWORD  dwThreadId = 0;
 	HANDLE hPipe = INVALID_HANDLE_VALUE, hThread = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
+	LPTSTR lpszPipenameGeral = TEXT("\\\\.\\pipe\\pipeGeral");
 
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 
 	// connects, a thread is created to handle communications 
 	// with that client, and this loop is free to wait for the
 	// next client connect request. It is an infinite loop.
-
 	for (;;)
 	{
 		_tprintf(TEXT("\nPipe Server: Main thread awaiting client connection on %s\n"), lpszPipename);
@@ -43,10 +45,27 @@ int Servidor::loop() {
 			return -1;
 		}
 
+		hPipeGeral = CreateNamedPipe(
+			lpszPipenameGeral,        // pipe name 
+			PIPE_ACCESS_DUPLEX,       // read/write access 
+			PIPE_TYPE_MESSAGE |       // message type pipe 
+			PIPE_READMODE_MESSAGE |   // message-read mode 
+			PIPE_WAIT,                // blocking mode 
+			PIPE_UNLIMITED_INSTANCES, // max. instances  
+			BUFSIZE,                  // output buffer size 
+			BUFSIZE,                  // input buffer size 
+			0,                        // client time-out 
+			NULL);                    // default security attribute 
+
+		if (hPipeGeral == INVALID_HANDLE_VALUE)
+		{
+			_tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
+			return -1;
+		}
+
 		// Wait for the client to connect; if it succeeds, 
 		// the function returns a nonzero value. If the function
 		// returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
-
 		fConnected = ConnectNamedPipe(hPipe, NULL) ?
 			TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
 
@@ -88,7 +107,6 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 // client connections.
 {
 	HANDLE hHeap = GetProcessHeap();
-	//TCHAR* pchRequest = (TCHAR*)HeapAlloc(hHeap, 0, BUFSIZE*sizeof(TCHAR));
 	Mensagem pchRequest;
 	Mensagem pchReply;
 	strcpy(pchReply.msg, "empty");
@@ -99,7 +117,6 @@ DWORD WINAPI Servidor::InstanceThread(LPVOID lpvParam)
 
 	// Do some extra error checking since the app will keep running even if this
 	// thread fails.
-
 	if (lpvParam == NULL)
 	{
 		printf("\nERROR - Pipe Server Failure:\n");
@@ -181,6 +198,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	// of an instance thread. Keep in mind the main thread will continue to wait for
 	// and receive other client connections while the instance thread is working.
 {
+	mtx.lock();
 	printf("Client Request String:\"%s\"\n", pchRequest.msg);
 	string entrada(pchRequest.msg);
 	string temp = "Comando não reconhecido";
@@ -194,16 +212,37 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);
 		jogo.jogadores.push_back(*temp_jogar);
 	}
+	if (tokens[0] == "jogar") {
+		temp = "A iniciar jogo...";
+		Mensagem tempMensagem;
+		strcpy_s(tempMensagem.msg, "JOGO!!!");
+		MandarATodosJogadores(tempMensagem, jogo.jogadores);
+	}
 
 	strcpy(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 
+	mtx.unlock();
 	return pchReply;
 }
 
 VOID Servidor::MandarATodosJogadores(Mensagem pchReply, vector<Jogador> lista)
 {
+	DWORD cbWritten;
+	size_t cbReplyBytes = sizeof(pchReply);
 
-	return VOID();
+	bool fSuccess = WriteFile(
+		hPipeGeral,        // handle to pipe 
+		&pchReply,     // buffer to write from 
+		cbReplyBytes, // number of bytes to write 
+		&cbWritten,   // number of bytes written 
+		NULL);        // not overlapped I/O 
+
+	if (!fSuccess || cbReplyBytes != cbWritten)
+	{
+		_tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
+	}
+	
+	FlushFileBuffers(hPipeGeral);
 }
 

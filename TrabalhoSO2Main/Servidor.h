@@ -3,7 +3,7 @@
 #include <stdio.h> 
 #include <tchar.h>
 #include <strsafe.h>
-#include <signal.h>
+#include <mutex>
 #include <sstream>
 #include <algorithm>
 #include <iterator>

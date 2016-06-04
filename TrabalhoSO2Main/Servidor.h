@@ -16,7 +16,6 @@ class Servidor
 private:
 	static DWORD WINAPI InstanceThread(LPVOID lpvParam);
 	static Mensagem GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LPDWORD pchBytes);
-	static DWORD WINAPI threadGlobal(LPVOID lpvParam);
 public:
 	Servidor();
 	~Servidor();

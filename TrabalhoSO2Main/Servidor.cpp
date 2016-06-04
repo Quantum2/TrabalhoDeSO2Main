@@ -18,7 +18,6 @@ int Servidor::loop() {
 	DWORD  dwThreadId = 0;
 	HANDLE hPipe = INVALID_HANDLE_VALUE, hPipeGeral = INVALID_HANDLE_VALUE, hThread = NULL, hThread2 = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
-	LPTSTR lpszPipenameGeral = TEXT("\\\\.\\pipe\\pipeGeral");
 
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 
@@ -41,24 +40,6 @@ int Servidor::loop() {
 			NULL);                    // default security attribute 
 
 		if (hPipe == INVALID_HANDLE_VALUE)
-		{
-			_tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
-			return -1;
-		}
-
-		hPipeGeral = CreateNamedPipe(
-			lpszPipenameGeral,        // pipe name 
-			PIPE_ACCESS_DUPLEX,       // read/write access 
-			PIPE_TYPE_MESSAGE |       // message type pipe 
-			PIPE_READMODE_MESSAGE |   // message-read mode 
-			PIPE_WAIT,                // blocking mode 
-			PIPE_UNLIMITED_INSTANCES, // max. instances  
-			BUFSIZE,                  // output buffer size 
-			BUFSIZE,                  // input buffer size 
-			0,                        // client time-out 
-			NULL);                    // default security attribute 
-
-		if (hPipeGeral == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
 			return -1;
@@ -89,22 +70,6 @@ int Servidor::loop() {
 				return -1;
 			}
 			else CloseHandle(hThread);
-
-			// Create a thread for this client, again... 
-			hThread2 = CreateThread(
-				NULL,              // no security attribute 
-				0,                 // default stack size 
-				threadGlobal,    // thread proc
-				(LPVOID)hPipeGeral,    // thread parameter 
-				0,                 // not suspended 
-				&dwThreadId);      // returns thread ID 
-
-			if (hThread2 == NULL)
-			{
-				_tprintf(TEXT("CreateThreadGlobal failed, GLE=%d.\n"), GetLastError());
-				return -1;
-			}
-			else CloseHandle(hThread2);
 		}
 		else
 			// The client could not connect, so close the pipe. 
@@ -264,54 +229,4 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	*pchBytes = sizeof(pchReply);
 
 	return pchReply;
-}
-
-DWORD Servidor::threadGlobal(LPVOID lpvParam)
-{
-	HANDLE hPipeGeral = NULL;
-	DWORD cbWritten, cbReplyBytes;
-	bool fSuccess, enviarParaEste = false;
-	PULONG pidThis = new ULONG;
-	unsigned long temp;
-
-	hPipeGeral = (HANDLE)lpvParam;
-	GetNamedPipeClientProcessId(hPipeGeral, pidThis);
-	temp = *pidThis;
-
-	while (true)
-	{
-		mtx.lock();
-		for (size_t i = 0; i < jogo.jogadores.size(); i++)
-		{
-			if (jogo.jogadores[i].getPid() == temp) {
-				enviarParaEste = true;
-			}
-		}
-
-		if (enviarTodos == true && enviarParaEste == true) {
-			cbReplyBytes = sizeof(globalM);
-
-			// Write the reply to the pipe. 
-			fSuccess = WriteFile(
-				hPipeGeral,        // handle to pipe 
-				&globalM,     // buffer to write from 
-				sizeof(globalM), // number of bytes to write 
-				&cbWritten,   // number of bytes written 
-				NULL);        // not overlapped I/O 
-
-			if (!fSuccess || cbReplyBytes != cbWritten)
-			{
-				_tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
-				break;
-			}
-		}
-		mtx.unlock();
-	}
-
-	FlushFileBuffers(hPipeGeral);
-	DisconnectNamedPipe(hPipeGeral);
-	CloseHandle(hPipeGeral);
-
-	printf("GlobalThread exitting.\n");
-	return 1;
 }

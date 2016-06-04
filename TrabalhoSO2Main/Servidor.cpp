@@ -18,7 +18,6 @@ int Servidor::loop() {
 	DWORD  dwThreadId = 0;
 	HANDLE hPipe = INVALID_HANDLE_VALUE, hPipeGeral = INVALID_HANDLE_VALUE, hThread = NULL, hThread2 = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
-	LPTSTR lpszPipenameGeral = TEXT("\\\\.\\pipe\\pipeGeral");
 
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 
@@ -41,24 +40,6 @@ int Servidor::loop() {
 			NULL);                    // default security attribute 
 
 		if (hPipe == INVALID_HANDLE_VALUE)
-		{
-			_tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
-			return -1;
-		}
-
-		hPipeGeral = CreateNamedPipe(
-			lpszPipenameGeral,        // pipe name 
-			PIPE_ACCESS_DUPLEX,       // read/write access 
-			PIPE_TYPE_MESSAGE |       // message type pipe 
-			PIPE_READMODE_MESSAGE |   // message-read mode 
-			PIPE_WAIT,                // blocking mode 
-			PIPE_UNLIMITED_INSTANCES, // max. instances  
-			BUFSIZE,                  // output buffer size 
-			BUFSIZE,                  // input buffer size 
-			0,                        // client time-out 
-			NULL);                    // default security attribute 
-
-		if (hPipeGeral == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
 			return -1;

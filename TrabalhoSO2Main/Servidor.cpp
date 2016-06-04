@@ -257,6 +257,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	if (tokens[0] == "terminar") {
 		temp = "A terminar jogo...";
 		strcpy_s(globalM.msg, "EM FASE DE SAIR!!!");
+		jogo.setEstado(jogo.A_PROCURAR_CLIENTES);
 		enviarTodos = true;
 	}
 

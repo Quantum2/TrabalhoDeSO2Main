@@ -89,22 +89,6 @@ int Servidor::loop() {
 				return -1;
 			}
 			else CloseHandle(hThread);
-
-			// Create a thread for this client, again... 
-			hThread2 = CreateThread(
-				NULL,              // no security attribute 
-				0,                 // default stack size 
-				threadGlobal,    // thread proc
-				(LPVOID)hPipeGeral,    // thread parameter 
-				0,                 // not suspended 
-				&dwThreadId);      // returns thread ID 
-
-			if (hThread2 == NULL)
-			{
-				_tprintf(TEXT("CreateThreadGlobal failed, GLE=%d.\n"), GetLastError());
-				return -1;
-			}
-			else CloseHandle(hThread2);
 		}
 		else
 			// The client could not connect, so close the pipe. 
@@ -264,54 +248,4 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	*pchBytes = sizeof(pchReply);
 
 	return pchReply;
-}
-
-DWORD Servidor::threadGlobal(LPVOID lpvParam)
-{
-	HANDLE hPipeGeral = NULL;
-	DWORD cbWritten, cbReplyBytes;
-	bool fSuccess, enviarParaEste = false;
-	PULONG pidThis = new ULONG;
-	unsigned long temp;
-
-	hPipeGeral = (HANDLE)lpvParam;
-	GetNamedPipeClientProcessId(hPipeGeral, pidThis);
-	temp = *pidThis;
-
-	while (true)
-	{
-		mtx.lock();
-		for (size_t i = 0; i < jogo.jogadores.size(); i++)
-		{
-			if (jogo.jogadores[i].getPid() == temp) {
-				enviarParaEste = true;
-			}
-		}
-
-		if (enviarTodos == true && enviarParaEste == true) {
-			cbReplyBytes = sizeof(globalM);
-
-			// Write the reply to the pipe. 
-			fSuccess = WriteFile(
-				hPipeGeral,        // handle to pipe 
-				&globalM,     // buffer to write from 
-				sizeof(globalM), // number of bytes to write 
-				&cbWritten,   // number of bytes written 
-				NULL);        // not overlapped I/O 
-
-			if (!fSuccess || cbReplyBytes != cbWritten)
-			{
-				_tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
-				break;
-			}
-		}
-		mtx.unlock();
-	}
-
-	FlushFileBuffers(hPipeGeral);
-	DisconnectNamedPipe(hPipeGeral);
-	CloseHandle(hPipeGeral);
-
-	printf("GlobalThread exitting.\n");
-	return 1;
 }

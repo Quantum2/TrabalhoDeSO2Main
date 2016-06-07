@@ -224,6 +224,9 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		strcpy_s(globalM.msg, "EM FASE DE SAIR!!!");
 		enviarTodos = true;
 	}
+	if (tokens[0] == "actualizar") {
+
+	}
 
 	strcpy(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);

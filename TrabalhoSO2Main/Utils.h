@@ -4,6 +4,7 @@
 #include <string>
 
 #define BUFSIZE 1024
+#define TAM_LABIRINTO 50
 
 using namespace std;
 
@@ -21,9 +22,10 @@ public:
 class Labirinto
 {
 private:
-
+	string mapa[TAM_LABIRINTO][TAM_LABIRINTO];
 public:
-
+	Labirinto();
+	void gerarLab();
 };
 
 class Jogo {

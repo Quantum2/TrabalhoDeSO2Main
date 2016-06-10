@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#define BUFSIZE 1024
+#define BUFSIZE 2048
 #define TAM_LABIRINTO 50
 
 using namespace std;
@@ -22,16 +22,17 @@ public:
 class Labirinto
 {
 private:
-	string mapa[TAM_LABIRINTO][TAM_LABIRINTO];
 public:
 	Labirinto();
 	void gerarLab();
+
+	string mapa[TAM_LABIRINTO][TAM_LABIRINTO];
 };
 
 class Jogo {
 private:
 	int estado = 1;
-	Labirinto lab;
+	Labirinto* lab;
 public:
 	Jogo();
 	~Jogo();
@@ -45,10 +46,13 @@ public:
 
 	void setEstado(int e);
 	int getEstado();
+
+	char** getCMap();
 };
 
 struct Mensagem {
 	int pid;
 	char msg[BUFSIZE];
+	char** mapa;
 	int pidsEnviar[128];
 };

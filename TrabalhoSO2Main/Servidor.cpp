@@ -225,10 +225,11 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		enviarTodos = true;
 	}
 	if (tokens[0] == "actualizar") {
-
+		temp = "A actualizar mapa";
+		pchReply.mapa = jogo.getCMap();
 	}
 
-	strcpy(pchReply.msg, temp.c_str());
+	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 
 	return pchReply;

@@ -191,7 +191,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 	if (tokens[0] == "login") {
 		if (jogo.getEstado() == jogo.A_PROCURAR_CLIENTES) {
 			temp = "A fazer login...";
-			Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid);
+			Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid, 100); //construtor de jogador - 100 hp
 			jogo.jogadores.push_back(*temp_jogar);
 		}
 		else {

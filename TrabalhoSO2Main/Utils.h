@@ -13,15 +13,21 @@ class Jogador
 private:
 	string name;
 	int pid;
+	int pedras[15];
+	int hp = 100;
+
 public:
-	Jogador(string nome, int p);
+	Jogador(string nome, int p, int vida);
 	~Jogador();
+	Jogador();
 	int getPid();
+
 };
 
 class Labirinto
 {
 private:
+	int gerado; // controlo para criaçao de itens - 5%
 public:
 	Labirinto();
 	void gerarLab();
@@ -50,7 +56,7 @@ public:
 	char** getCMap();
 };
 
-struct Mensagem {
+struct Mensagem { //cliente para servidor
 	int pid;
 	char msg[BUFSIZE];
 	char** mapa;

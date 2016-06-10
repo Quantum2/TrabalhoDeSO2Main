@@ -1,12 +1,13 @@
 #include "Utils.h"
 
-Labirinto::Labirinto() 
+Labirinto::Labirinto()
 {
 	gerarLab();
 }
 
 void Labirinto::gerarLab()
 {
+
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
 	{
 		for (size_t j = 0; j < TAM_LABIRINTO; j++)
@@ -27,18 +28,29 @@ void Labirinto::gerarLab()
 			{
 				mapa[i][j] = "*";
 			}
+			gerado = rand() % 100;
+			if (gerado <= 5)
+			{
+				gerado = rand() % 100;
+				if (gerado <= 50) mapa[i][j] = "P";
+				else if (gerado>50 && gerado <= 80) mapa[i][j] = "V";
+				else if (gerado>81 && gerado <= 90) mapa[i][j] = "O";
+				else if (gerado>91 && gerado <= 99) mapa[i][j] = "C";
+				else if (gerado = 100) mapa[i][j] = "M";
+			}
 
 			mapa[i][j] = "_";
 		}
 	}
 }
 
-char** Jogo::getCMap() {
+
+char** Jogo::getCMap() { //converte string C++ pra C 
 	char **temp;
-	temp = (char**) malloc(sizeof(char *) * TAM_LABIRINTO);
+	temp = (char**)malloc(sizeof(char *) * TAM_LABIRINTO);
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
 	{
-		temp[i] = (char *) malloc(sizeof(char) * TAM_LABIRINTO);
+		temp[i] = (char *)malloc(sizeof(char) * TAM_LABIRINTO);
 	}
 
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
@@ -53,7 +65,7 @@ char** Jogo::getCMap() {
 }
 
 
-Jogo::Jogo() 
+Jogo::Jogo()
 {
 	lab = new Labirinto();
 }
@@ -72,11 +84,15 @@ int Jogo::getEstado()
 	return estado;
 }
 
-Jogador::Jogador(string nome, int p)
+Jogador::Jogador(string nome, int p, int vida)
 {
 	name = nome;
 	pid = p;
+	hp = vida;
+	//
 }
+
+
 
 Jogador::~Jogador()
 {
@@ -86,3 +102,5 @@ int Jogador::getPid()
 {
 	return pid;
 }
+
+

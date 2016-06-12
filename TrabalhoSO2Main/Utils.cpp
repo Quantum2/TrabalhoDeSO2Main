@@ -36,7 +36,7 @@ void Labirinto::gerarLab()
 				else if (gerado>50 && gerado <= 80) mapa[i][j] = "V";
 				else if (gerado>81 && gerado <= 90) mapa[i][j] = "O";
 				else if (gerado>91 && gerado <= 99) mapa[i][j] = "C";
-				else if (gerado = 100) mapa[i][j] = "M";
+				else if (gerado = 100) mapa[i][j] = "M"; //machado - objecto extra - tira 5hp
 			}
 
 			mapa[i][j] = "_";
@@ -101,9 +101,36 @@ Jogador::~Jogador()
 {
 }
 
+Jogador::Jogador()
+{
+}
+
 int Jogador::getPid()
 {
 	return pid;
 }
+
+int Jogador::getX()
+{
+	return posx;
+}
+
+int Jogador::getY()
+{
+	return posy;
+}
+
+int Jogador::setX(int n)
+{
+	int posx=n;
+	return posx;
+}
+
+int Jogador::setY(int n)
+{
+	int posY = n;
+	return posy;
+}
+
 
 

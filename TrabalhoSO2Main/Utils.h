@@ -26,13 +26,17 @@ private:
 	int pid;
 	int pedras[15];
 	int hp = 100;
-
+	int posx;
+	int posy;
 public:
 	Jogador(string nome, int p, int vida);
 	~Jogador();
 	Jogador();
 	int getPid();
-
+	int getX();
+	int getY();
+	int setX(int n);
+	int setY(int n);
 };
 
 class Labirinto
@@ -63,6 +67,8 @@ public:
 
 	void setEstado(int e);
 	int getEstado();
+
+
 
 	Mapa getCMap();
 };

@@ -161,7 +161,7 @@ void Consola::setTextSizeXP(int x, int y) {
 
 // estas funcoes servem para pouco a nao ser que nao se tape/destape a janela
 // o refresh da janela da consola n�o reactualiza isto
-// por esse motivo nao achei que valesse apena optimizar certos aspectos delas
+// por esse motivo nao achei que valesse a pena optimizar certos aspectos delas
 void Consola::drawLine(int x1, int y1, int x2, int y2, int cor) {
 	HDC DrawHDC;
 	HPEN hOPen;  // penstyle, width, color

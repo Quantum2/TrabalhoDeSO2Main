@@ -8,6 +8,17 @@
 
 using namespace std;
 
+struct Mapa {
+	char mapaEnv[TAM_LABIRINTO][TAM_LABIRINTO * 3];
+};
+
+struct Mensagem { //cliente para servidor
+	int pid;
+	char msg[BUFSIZE];
+	int pidsEnviar[128];
+	Mapa mapa;
+};
+
 class Jogador
 {
 private:
@@ -53,12 +64,5 @@ public:
 	void setEstado(int e);
 	int getEstado();
 
-	char** getCMap();
-};
-
-struct Mensagem { //cliente para servidor
-	int pid;
-	char msg[BUFSIZE];
-	char** mapa;
-	int pidsEnviar[128];
+	Mapa getCMap();
 };

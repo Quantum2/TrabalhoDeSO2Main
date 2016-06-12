@@ -45,23 +45,26 @@ void Labirinto::gerarLab()
 }
 
 
-char** Jogo::getCMap() { //converte string C++ pra C 
-	char **temp;
-	temp = (char**)malloc(sizeof(char *) * TAM_LABIRINTO);
-	for (size_t i = 0; i < TAM_LABIRINTO; i++)
-	{
-		temp[i] = (char *)malloc(sizeof(char) * TAM_LABIRINTO);
-	}
+Mapa Jogo::getCMap() { //converte string C++ pra C 
+	Mapa m;
+	char temp[TAM_LABIRINTO][TAM_LABIRINTO * 3];
 
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
 	{
+		string tempS;
 		for (size_t j = 0; j < TAM_LABIRINTO; j++)
 		{
-			strcpy(&temp[i][j], lab->mapa[i][j].c_str());
+			tempS.append(lab->mapa[i][j] + "\n");
 		}
+		strcpy_s(temp[i], tempS.c_str());
 	}
 
-	return temp;
+	for (size_t i = 0; i < TAM_LABIRINTO; i++)
+	{
+		strcpy_s(m.mapaEnv[i], temp[i]);
+	}
+
+	return m;
 }
 
 

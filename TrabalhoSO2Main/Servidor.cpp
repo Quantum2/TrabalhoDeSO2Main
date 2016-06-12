@@ -231,9 +231,14 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 
 	if (tokens[0] == "esquerda") { //por dentro duma funçao jogando() quando existir um jogo a decorrer/iniciar
 		//temp = "jogador andou pra esquerda"; //nao aparece
-		for (int i = 0; i < jogo.jogadores.size(); i++) {
-		if (jogo.jogadores[i].getPid() == pchRequest.pid)
-			jogo.jogadores[i].setX(-1) ;
+		for (int i = 0; i < jogo.jogadores.size(); i++) 
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				int x= jogo.jogadores[i].getX();
+				x-=1;
+				jogo.jogadores[i].setX(x);
+			}
 		}
 		//actualiza
 		pchReply.mapa = jogo.getCMap();

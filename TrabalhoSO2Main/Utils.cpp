@@ -7,7 +7,6 @@ Labirinto::Labirinto()
 
 void Labirinto::gerarLab()
 {
-
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
 	{
 		for (size_t j = 0; j < TAM_LABIRINTO; j++)
@@ -44,17 +43,22 @@ void Labirinto::gerarLab()
 	}
 }
 
-
 Mapa Jogo::getCMap() { //converte string C++ pra C 
 	Mapa m;
 	char temp[TAM_LABIRINTO][TAM_LABIRINTO * 3];
+
+	for (size_t i = 0; i < jogadores.size(); i++)
+	{
+		Jogador temp = jogadores[i];
+		lab->mapa[temp.getX()][temp.getY()] = "J";
+	}
 
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
 	{
 		string tempS;
 		for (size_t j = 0; j < TAM_LABIRINTO; j++)
 		{
-			tempS.append(lab->mapa[i][j] + "\n");
+			tempS.append(lab->mapa[i][j] + " ");
 		}
 		strcpy_s(temp[i], tempS.c_str());
 	}
@@ -67,7 +71,6 @@ Mapa Jogo::getCMap() { //converte string C++ pra C
 	return m;
 }
 
-
 Jogo::Jogo()
 {
 	lab = new Labirinto();
@@ -75,6 +78,16 @@ Jogo::Jogo()
 
 Jogo::~Jogo()
 {
+}
+
+void Jogo::adicionarJogador(Jogador j)
+{
+	srand(time(NULL));
+	int x = rand() % TAM_LABIRINTO;
+	int y = rand() % TAM_LABIRINTO;
+
+	j.setPos(x, y);
+	jogadores.push_back(j);
 }
 
 void Jogo::setEstado(int e)
@@ -95,9 +108,11 @@ Jogador::Jogador(string nome, int p, int vida)
 	//
 }
 
-
-
 Jogador::~Jogador()
+{
+}
+
+Jogador::Jogador()
 {
 }
 
@@ -106,4 +121,19 @@ int Jogador::getPid()
 	return pid;
 }
 
+void Jogador::setPos(int x, int y)
+{
+	posX = x;
+	posY = y;
+}
+
+int Jogador::getX()
+{
+	return posX;
+}
+
+int Jogador::getY()
+{
+	return posY;
+}
 

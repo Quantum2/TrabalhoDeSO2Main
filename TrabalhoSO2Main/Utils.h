@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <time.h>
 
 #define BUFSIZE 2048
 #define TAM_LABIRINTO 50
@@ -23,16 +24,16 @@ class Jogador
 {
 private:
 	string name;
-	int pid;
+	int pid, hp = 100, posX, posY;
 	int pedras[15];
-	int hp = 100;
-
 public:
 	Jogador(string nome, int p, int vida);
 	~Jogador();
 	Jogador();
 	int getPid();
-
+	void setPos(int x, int y);
+	int getX();
+	int getY();
 };
 
 class Labirinto
@@ -42,7 +43,6 @@ private:
 public:
 	Labirinto();
 	void gerarLab();
-
 	string mapa[TAM_LABIRINTO][TAM_LABIRINTO];
 };
 
@@ -56,6 +56,7 @@ public:
 
 	string lastCommand;
 	vector<Jogador> jogadores;
+	void adicionarJogador(Jogador j);
 
 	const int A_PROCURAR_CLIENTES = 1;
 	const int A_INICIAR_JOGO = 2;

@@ -41,9 +41,7 @@ int main() {
 	}
 
 	MessageBox(NULL, pBuf, TEXT("Process2"), MB_OK);
-
 	UnmapViewOfFile(pBuf);
-
 	CloseHandle(hMapFile);
 
 	return 0;

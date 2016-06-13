@@ -229,7 +229,8 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		pchReply.mapa = jogo.getCMap();
 	}
 
-	if (tokens[0] == "esquerda") { //por dentro duma funçao jogando() quando existir um jogo a decorrer/iniciar
+	if (tokens[0] == "esquerda") 
+	{ //por dentro duma funçao jogando() quando existir um jogo a decorrer/iniciar
 		//temp = "jogador andou pra esquerda"; //nao aparece
 		for (int i = 0; i < jogo.jogadores.size(); i++) 
 		{
@@ -242,8 +243,52 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		}
 		//actualiza
 		pchReply.mapa = jogo.getCMap();
-		
+	}
 
+
+	if (tokens[0] == "direita")
+	{ 
+		for (int i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				int x = jogo.jogadores[i].getX();
+				x+= 1;
+				jogo.jogadores[i].setPos(x, jogo.jogadores[i].getY());
+			}
+		}
+		//actualiza
+		pchReply.mapa = jogo.getCMap();
+	}
+
+	if (tokens[0] == "cima")
+	{
+		for (int i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				int y = jogo.jogadores[i].getY();
+				y += 1;
+				jogo.jogadores[i].setPos(jogo.jogadores[i].getX(), y);
+			}
+		}
+		//actualiza
+		pchReply.mapa = jogo.getCMap();
+	}
+
+	if (tokens[0] == "baixo")
+	{ 
+		for (int i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				int y = jogo.jogadores[i].getY();
+				y -= 1;
+				jogo.jogadores[i].setPos(jogo.jogadores[i].getX(), y);
+			}
+		}
+		//actualiza
+		pchReply.mapa = jogo.getCMap();
 	}
 
 

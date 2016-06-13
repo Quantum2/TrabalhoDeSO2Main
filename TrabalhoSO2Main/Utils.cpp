@@ -105,7 +105,7 @@ Jogador::Jogador(string nome, int p, int vida)
 	name = nome;
 	pid = p;
 	hp = vida;
-	//
+	
 }
 
 Jogador::~Jogador()

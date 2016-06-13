@@ -237,7 +237,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 			{
 				int x= jogo.jogadores[i].getX();
 				x-=1;
-				jogo.jogadores[i].setX(x);
+				jogo.jogadores[i].setPos(x, jogo.jogadores[i].getY());
 			}
 		}
 		//actualiza

@@ -26,7 +26,7 @@ int Servidor::loop() {
 	// next client connect request. It is an infinite loop.
 	for (;;)
 	{
-		_tprintf(TEXT("\nPipe Server: Main thread awaiting client connection on %s\n"), lpszPipename);
+		_tprintf(TEXT("\nPipe do Servidor: Thread principal a espera da ligacao de um cliente em %s\n"), lpszPipename);
 		hPipe = CreateNamedPipe(
 			lpszPipename,             // pipe name 
 			PIPE_ACCESS_DUPLEX,       // read/write access 
@@ -228,6 +228,25 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		temp = "A actualizar mapa";
 		pchReply.mapa = jogo.getCMap();
 	}
+
+	if (tokens[0] == "esquerda") { //por dentro duma funçao jogando() quando existir um jogo a decorrer/iniciar
+		//temp = "jogador andou pra esquerda"; //nao aparece
+		for (int i = 0; i < jogo.jogadores.size(); i++) 
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				int x= jogo.jogadores[i].getX();
+				x-=1;
+				jogo.jogadores[i].setX(x);
+			}
+		}
+		//actualiza
+		pchReply.mapa = jogo.getCMap();
+		
+
+	}
+
+
 
 	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);

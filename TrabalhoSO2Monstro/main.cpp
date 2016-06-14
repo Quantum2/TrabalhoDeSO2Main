@@ -5,7 +5,7 @@
 #include <tchar.h>
 #pragma comment(lib, "user32.lib")
 
-#define BUF_SIZE 256
+#define BUF_SIZE 512
 TCHAR szName[] = TEXT("Global\\MyFileMappingObject");
 
 int main() {
@@ -36,7 +36,6 @@ int main() {
 			GetLastError());
 
 		CloseHandle(hMapFile);
-
 		return 1;
 	}
 

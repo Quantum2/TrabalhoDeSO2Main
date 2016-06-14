@@ -20,6 +20,13 @@ struct Mensagem { //cliente para servidor
 	Mapa mapa;
 };
 
+class Monstro {
+private:
+
+public:
+
+};
+
 class Jogador
 {
 private:

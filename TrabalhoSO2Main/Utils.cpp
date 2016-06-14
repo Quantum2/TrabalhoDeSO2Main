@@ -176,3 +176,20 @@ int Jogador::atacar()
 		}
 
 } 
+
+int Jogo::quemEstaAqui(Jogador j)
+{
+	int x=j.getX();
+	int y=j.getY();
+
+	int x1,y1;
+
+	for (size_t i = 0; i < jogadores.size(); i++)
+	{
+		Jogador temp = jogadores[i];
+		x1=temp.getX();
+		y1=temp.getY();
+		if (x==x1 && y==y1)
+			return temp.getPid();
+	}
+}

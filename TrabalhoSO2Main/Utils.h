@@ -5,7 +5,7 @@
 #include <time.h>
 
 #define BUFSIZE 2048
-#define TAM_LABIRINTO 50
+#define TAM_LABIRINTO 20
 
 using namespace std;
 
@@ -35,7 +35,6 @@ public:
 	Jogador();
 	int getPid();
 	void setPos(int x, int y);
-	
 	bool getPedra();
 	bool getMachado();
 	void setPedra(bool p);
@@ -43,8 +42,6 @@ public:
 	void togglePedra();
 	void toggleMachado();
 	int atacar();
-
-
 	int getX();
 	int getY();
 };

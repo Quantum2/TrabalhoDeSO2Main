@@ -43,9 +43,20 @@ void Labirinto::gerarLab()
 	}
 }
 
-Mapa Jogo::getCMap() { //converte string C++ pra C 
+Mapa Jogo::getCMap() {       
 	Mapa m;
 	char temp[TAM_LABIRINTO][TAM_LABIRINTO * 3];
+
+	for (size_t i = 0; i < TAM_LABIRINTO; i++)
+	{
+		for (size_t j = 0; j < TAM_LABIRINTO; j++)
+		{
+			if (lab->mapa[i][j] == "J")
+			{
+				lab->mapa[i][j] = "_";
+			}
+		}
+	}
 
 	for (size_t i = 0; i < jogadores.size(); i++)
 	{
@@ -175,6 +186,7 @@ int Jogador::atacar()
 			//machado prevalece independentemente de pedra on ou off - tira 5 hp 
 		}
 
+		return 0;
 } 
 
 int Jogo::quemEstaAqui(Jogador j)

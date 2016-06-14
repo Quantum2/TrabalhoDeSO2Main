@@ -224,6 +224,17 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		strcpy_s(globalM.msg, "EM FASE DE SAIR!!!");
 		enviarTodos = true;
 	}
+	if (tokens[0] == "logout")
+	{
+		temp = "A sair...";
+		for (size_t i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if (jogo.jogadores[i].getPid() == pchRequest.pid)
+			{
+				jogo.jogadores.erase(jogo.jogadores.begin() + i);
+			}
+		}
+	}
 	if (tokens[0] == "actualizar") {
 		temp = "A actualizar mapa";
 		pchReply.mapa = jogo.getCMap();
@@ -244,8 +255,6 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		//actualiza
 		pchReply.mapa = jogo.getCMap();
 	}
-
-
 	if (tokens[0] == "direita")
 	{ 
 		for (int i = 0; i < jogo.jogadores.size(); i++)
@@ -260,8 +269,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		//actualiza
 		pchReply.mapa = jogo.getCMap();
 	}
-
-	if (tokens[0] == "cima")
+	if (tokens[0] == "baixo")
 	{
 		for (int i = 0; i < jogo.jogadores.size(); i++)
 		{
@@ -275,11 +283,8 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		//actualiza
 		pchReply.mapa = jogo.getCMap();
 	}
-
-	if (tokens[0] == "baixo")
+	if (tokens[0] == "cima")
 	{ 
-
-		
 		for (int i = 0; i < jogo.jogadores.size(); i++)
 		{
 			if (jogo.jogadores[i].getPid() == pchRequest.pid)
@@ -292,7 +297,6 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		//actualiza
 		pchReply.mapa = jogo.getCMap();
 	}
-
 	if (tokens[0] == "pedra") 
 	{
 		for (int i = 0; i < jogo.jogadores.size(); i++)
@@ -301,7 +305,6 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				jogo.jogadores[i].togglePedra();
 		}
 	}
-
 	if (tokens[0] == "machado")
 	{
 		for (int i = 0; i < jogo.jogadores.size(); i++)
@@ -310,7 +313,6 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				jogo.jogadores[i].toggleMachado();
 		}		
 	}
-
 	if (tokens[0] == "atacar")
 	{
 		for (int i = 0; i < jogo.jogadores.size(); i++)
@@ -319,7 +321,6 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				jogo.jogadores[i].atacar();
 		}
 	}
-
 	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 

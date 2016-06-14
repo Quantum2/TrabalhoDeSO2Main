@@ -137,3 +137,42 @@ int Jogador::getY()
 	return posY;
 }
 
+bool Jogador::getPedra(){ return pedra;}
+bool Jogador::getMachado(){return machado;}
+
+void Jogador::setPedra(bool p){pedra=p;}
+void Jogador::setMachado(bool m) { machado = m; }
+
+void Jogador::togglePedra()
+{
+	if(getPedra()==false) setPedra(true);
+	else setPedra(false);
+
+}
+
+void Jogador::toggleMachado()
+{
+	if (getMachado() == false) setMachado(true);
+	else setMachado(false);
+
+}
+
+int Jogador::atacar()
+{
+	//fucking important
+	//FALTA verificar quem ou o que está na mesma posiçao q ele  !!!
+	//
+	if (getPedra()==false && getMachado()==false)
+		{
+			//remover 1 hp ao outro jogador/monstro
+		}	
+		else if ((getPedra() == true && getMachado() == false))
+		{
+			//~remover 2hp do outro jogador/monstro
+		}
+		else if( (getPedra() == true && getMachado() == true) || (getPedra() == false && getMachado() == true))
+		{
+			//machado prevalece independentemente de pedra on ou off - tira 5 hp 
+		}
+
+} 

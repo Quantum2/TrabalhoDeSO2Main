@@ -26,12 +26,25 @@ private:
 	string name;
 	int pid, hp = 100, posX, posY;
 	int pedras[15];
+	bool pedra=false; // se vai atacar com pedra
+	bool machado=false;// se vai atacar com machado
+	int existeMachado=0;
 public:
 	Jogador(string nome, int p, int vida);
 	~Jogador();
 	Jogador();
 	int getPid();
 	void setPos(int x, int y);
+	
+	bool getPedra();
+	bool getMachado();
+	void setPedra(bool p);
+	void setMachado(bool m);
+	void togglePedra();
+	void toggleMachado();
+	int atacar();
+
+
 	int getX();
 	int getY();
 };

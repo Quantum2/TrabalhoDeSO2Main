@@ -444,6 +444,15 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 			}
 		}
 	}
+
+	for (size_t i = 0; i < jogo.jogadores.size(); i++)
+	{
+		if (pchRequest.pid == jogo.jogadores[i].getPid())
+		{
+			pchReply.vida = jogo.jogadores[i].getHP();
+		}
+	}
+
 	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 

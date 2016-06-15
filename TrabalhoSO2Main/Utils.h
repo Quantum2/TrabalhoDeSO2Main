@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <Windows.h>
 #include <time.h>
 
 #define BUFSIZE 2048
@@ -111,3 +112,5 @@ public:
 
 	Mapa getCMap();
 };
+
+wchar_t *convertCharArrayToLPCWSTR(const char* charArray);

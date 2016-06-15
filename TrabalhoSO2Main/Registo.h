@@ -1,14 +1,14 @@
 #pragma once
 #include <Windows.h>
 #include <iostream>
+#include "Utils.h"
 
 using namespace std;
 
 class Registo
 {
 private:
-	const LPCTSTR REG_SW_GROUP_I_WANT = L"SOFTWARE\\ISEC\\SO2\\RR";
-	const string REG_KEY_I_WANT = "Main Key";
+	const LPCTSTR REG_SW_GROUP_I_WANT = L"SOFTWARE\\ISEC\\SO2\\RR\\";
 public:
 	Registo();
 	~Registo();

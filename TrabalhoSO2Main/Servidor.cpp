@@ -361,14 +361,14 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				jogo.jogadores[i].toggleMachado();
 		}		
 	}
-	if (tokens[0] == "atacar")
+/*	if (tokens[0] == "atacar")
 	{
 		for (int i = 0; i < jogo.jogadores.size(); i++)
 		{
 			if (jogo.jogadores[i].getPid() == pchRequest.pid)
 				jogo.jogadores[i].atacar();
 		}
-	}
+	}*/
 	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 

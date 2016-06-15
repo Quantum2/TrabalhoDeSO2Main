@@ -132,8 +132,9 @@ Jogador::~Jogador()
 {
 }
 
-Jogador::Jogador()
+Jogador::Jogador(int v)
 {
+	hp=v;
 }
 
 int Jogador::getPid()
@@ -199,6 +200,7 @@ int Jogador::atacar(Jogador j)
 	if (getPedra()==false && getMachado()==false)
 		{
 			j.setHP(1);
+			printf("VIDA:%d\n", j.getHP());
 		}	
 		else if ((getPedra() == true && getMachado() == false))
 		{
@@ -227,7 +229,7 @@ Jogador Jogo::verificaVizinhos(Jogador j)
 	
 		if ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) return temp;
 	}
-	return Jogador();
+	return Jogador(-100);
 }
 
 

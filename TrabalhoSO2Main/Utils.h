@@ -50,7 +50,7 @@ private:
 public:
 	Jogador(string nome, int p, int vida);
 	~Jogador();
-	Jogador();
+	Jogador(int v);
 	int getHP();
 	void setHP(int dano);
 	int getPid();

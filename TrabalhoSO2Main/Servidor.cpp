@@ -4,7 +4,7 @@ static Jogo jogo;
 static mutex mtx;
 static bool enviarTodos = false;
 static Mensagem globalM;
-
+static int vidaCliente;
 TCHAR szName[] = TEXT("Local\\MyFileMappingObject");
 
 Servidor::Servidor()
@@ -314,6 +314,23 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		}
 	}
 	if (tokens[0] == "actualizar") {
+		for (int i = 0; i < jogo.jogadores.size(); i++)
+		{
+			if ((jogo.jogadores[i].getPid() == pchRequest.pid))
+			{
+				vidaCliente = jogo.jogadores[i].getHP();
+				if (vidaCliente <= 0)
+				{
+					for (size_t i = 0; i < jogo.jogadores.size(); i++)
+					{
+						if (jogo.jogadores[i].getPid() == pchRequest.pid)
+						{
+							jogo.jogadores.erase(jogo.jogadores.begin() + i);
+						}
+					}
+				}
+			}
+		}
 		temp = "A actualizar mapa";
 		pchReply.mapa = jogo.getCMap();
 	}
@@ -396,27 +413,21 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 
 		for (int i = 0; i < jogo.jogadores.size(); i++)
 		{
-			if ((jogo.jogadores[i].getPid() == pchRequest.pid)){
-				Jogador temp=jogo.verificaVizinhos(jogo.jogadores[i]);
-				if (temp.getHP()>0)//encontra alguem
+			if ((jogo.jogadores[i].getPid() == pchRequest.pid))
+			{
+				Jogador inimigo=jogo.verificaVizinhos(jogo.jogadores[i]);
+				if (inimigo.getHP()>0)//encontra alguem
 				{ 
-					jogo.jogadores[i].atacar(jogo.verificaVizinhos(jogo.jogadores[i]));
-					int aux=jogo.jogadores[i].getHP();
-					if (aux<=0) 
-					{
-						for (size_t i = 0; i < jogo.jogadores.size(); i++)
-						{
-							if (jogo.jogadores[i].getPid() == pchRequest.pid)
-							{
-								jogo.jogadores.erase(jogo.jogadores.begin() + i);
-							}
-						}
-					}
-				pchReply.vida=aux;
+					jogo.jogadores[i].atacar(inimigo);
 				}
+				pchReply.vida= vidaCliente;
+				
 			}
 		}
 	}
+	
+		
+	pchReply.vida = vidaCliente;
 	strcpy_s(pchReply.msg, temp.c_str());
 	*pchBytes = sizeof(pchReply);
 

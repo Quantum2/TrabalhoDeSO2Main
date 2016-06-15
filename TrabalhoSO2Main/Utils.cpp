@@ -205,7 +205,7 @@ int Jogador::atacar(Jogador j)
 		return 0;
 } 
 
-void Jogo::quemEstaAqui(Jogador j)
+Jogador Jogo::verificaVizinhos(Jogador j)
 {
 	int x=j.getX();
 	int y=j.getY();
@@ -218,10 +218,11 @@ void Jogo::quemEstaAqui(Jogador j)
 		x1=temp.getX();
 		y1=temp.getY();
 	
-		if ( ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) && (temp.getAtacaAuto()))
-			j.atacar(temp);
+		if ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) return temp;
 	}
+	return Jogador();
 }
+
 
 Monstro::Monstro()
 {

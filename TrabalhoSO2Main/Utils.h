@@ -17,6 +17,7 @@ struct Mensagem { //cliente para servidor
 	int pid;
 	char msg[BUFSIZE];
 	int pidsEnviar[128];
+	int vida;
 	Mapa mapa;
 };
 

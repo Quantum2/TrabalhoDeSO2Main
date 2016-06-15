@@ -398,7 +398,22 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 		{
 			if ((jogo.jogadores[i].getPid() == pchRequest.pid)){
 				Jogador temp=jogo.verificaVizinhos(jogo.jogadores[i]);
-				if (temp.getHP()>0)jogo.jogadores[i].atacar(jogo.verificaVizinhos(jogo.jogadores[i]));
+				if (temp.getHP()>0)//encontra alguem
+				{ 
+					jogo.jogadores[i].atacar(jogo.verificaVizinhos(jogo.jogadores[i]));
+					int aux=jogo.jogadores[i].getHP();
+					if (aux<=0) 
+					{
+						for (size_t i = 0; i < jogo.jogadores.size(); i++)
+						{
+							if (jogo.jogadores[i].getPid() == pchRequest.pid)
+							{
+								jogo.jogadores.erase(jogo.jogadores.begin() + i);
+							}
+						}
+					}
+				pchReply.vida=aux;
+				}
 			}
 		}
 	}

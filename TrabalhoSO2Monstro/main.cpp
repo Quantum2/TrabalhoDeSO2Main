@@ -15,6 +15,13 @@ void startMonstro(LPCTSTR pBuf) {
 	MemoryShare *share;
 	int id;
 
+	HANDLE ghWriteEvent = CreateEvent(
+		NULL,               // default security attributes
+		FALSE,               // manual-reset event
+		FALSE,              // initial state is nonsignaled
+		TEXT("WriteEvent")  // object name
+		);
+
 	share = (MemoryShare *)pBuf;
 	id = share->monstrosLigados;
 	share->monstrosLigados++;
@@ -47,6 +54,7 @@ void startMonstro(LPCTSTR pBuf) {
 			share->monstros[id].setY(share->monstros[id].getPosY() + 1);
 			cout << "Monstro com ID " << id << " anda para X:" << share->monstros[id].getPosX() << " Y:" << share->monstros[id].getPosY() << endl;
 		}
+		SetEvent(ghWriteEvent);
 		_sleep(1500);
 	}
 }

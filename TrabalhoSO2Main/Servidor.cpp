@@ -15,9 +15,10 @@ Servidor::~Servidor()
 {
 }
 
-int confMemPartilhada() {
+DWORD WINAPI confMemPartilhada(LPVOID lpvParam) {
 	HANDLE hMapFile;
-	LPCSTR pBuf;
+	volatile LPCSTR pBuf;
+	MemoryShare* temp;
 
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,    // use paging file
@@ -33,6 +34,7 @@ int confMemPartilhada() {
 			GetLastError());
 		return 1;
 	}
+
 	pBuf = (LPCSTR)MapViewOfFile(hMapFile,   // handle to map object
 		FILE_MAP_ALL_ACCESS, // read/write permission
 		0,
@@ -49,14 +51,36 @@ int confMemPartilhada() {
 		return 1;
 	}
 
+	_tprintf(TEXT("Configurada memoria partilhada\n"));
 	jogo.ms.monstrosLigados = 0;
 	CopyMemory((PVOID)pBuf, &jogo.ms, sizeof(jogo.ms));
+	temp = (MemoryShare *)pBuf;
 
-	/*
+	HANDLE ghWriteEvent = CreateEvent(
+		NULL,               // default security attributes
+		FALSE,               // manual-reset event
+		FALSE,              // initial state is nonsignaled
+		TEXT("WriteEvent")  // object name
+		);
+
+	if (ghWriteEvent == NULL)
+	{
+		printf("CreateEvent failed (%d)\n", GetLastError());
+		return 1;
+	}
+
+	while (true)
+	{
+		if (WaitForSingleObject(ghWriteEvent, INFINITE) == WAIT_OBJECT_0)
+		{
+			_tprintf(TEXT("DEBUG INFO - A mover um monstro, evento\n"));
+			jogo.ms = *temp;
+		}
+	}
+
+	
 	UnmapViewOfFile(pBuf);
-	CloseHandle(hMapFile);*/
-
-	return 0;
+	CloseHandle(hMapFile);
 }
 
 int Servidor::loop() {
@@ -65,7 +89,13 @@ int Servidor::loop() {
 	HANDLE hPipe = INVALID_HANDLE_VALUE, hPipeGeral = INVALID_HANDLE_VALUE, hThread = NULL, hThread2 = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
 
-	confMemPartilhada();
+	CreateThread(
+		NULL,                   // default security attributes
+		0,                      // use default stack size  
+		confMemPartilhada,       // thread function name
+		NULL,                  // argument to thread function 
+		0,                      // use default creation flags 
+		NULL);                 // returns the thread identifier 
 
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 

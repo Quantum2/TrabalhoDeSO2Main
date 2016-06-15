@@ -57,7 +57,7 @@ Mapa Jogo::getCMap() {
 			}
 			if (lab->mapa[i][j] == "M")
 			{
-				lab->mapa[i][j] == "_";
+				lab->mapa[i][j] = "_";
 			}
 		}
 	}

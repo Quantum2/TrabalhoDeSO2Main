@@ -3,10 +3,53 @@
 #include <stdio.h>
 #include <conio.h>
 #include <tchar.h>
+#include <time.h>
+#include "Utils.h"
 #pragma comment(lib, "user32.lib")
 
-#define BUF_SIZE 512
-TCHAR szName[] = TEXT("Global\\MyFileMappingObject");
+#define BUF_SIZE 1024
+TCHAR szName[] = TEXT("Local\\MyFileMappingObject");
+
+void startMonstro(LPCTSTR pBuf) {
+	Monstro m;
+	MemoryShare *share;
+	int id;
+
+	share = (MemoryShare *)pBuf;
+	id = share->monstrosLigados;
+	share->monstrosLigados++;
+	share->monstros[id].setVisible(true);
+
+	srand(time(NULL));
+	share->monstros[id].setX(rand() % share->tamanhoMapa);
+	share->monstros[id].setY(rand() % share->tamanhoMapa);
+
+	while (true)
+	{
+		int r = rand() % 100;
+		if (r < 25)
+		{
+			share->monstros[id].setX(share->monstros[id].getPosX() + 1);
+			cout << "Monstro com ID " << id << " anda para X:" << share->monstros[id].getPosX() << " Y:" << share->monstros[id].getPosY() << endl;
+		}
+		if (r > 25 && r < 50)
+		{
+			share->monstros[id].setX(share->monstros[id].getPosX() - 1);
+			cout << "Monstro com ID " << id << " anda para X:" << share->monstros[id].getPosX() << " Y:" << share->monstros[id].getPosY() << endl;
+		}
+		if (r > 50 && r < 75)
+		{
+			share->monstros[id].setY(share->monstros[id].getPosY() - 1);
+			cout << "Monstro com ID " << id << " anda para X:" << share->monstros[id].getPosX() << " Y:" << share->monstros[id].getPosY() << endl;
+		}
+		if (r > 75)
+		{
+			share->monstros[id].setY(share->monstros[id].getPosY() + 1);
+			cout << "Monstro com ID " << id << " anda para X:" << share->monstros[id].getPosX() << " Y:" << share->monstros[id].getPosY() << endl;
+		}
+		_sleep(1500);
+	}
+}
 
 int main() {
 	HANDLE hMapFile;
@@ -39,7 +82,8 @@ int main() {
 		return 1;
 	}
 
-	MessageBox(NULL, pBuf, TEXT("Process2"), MB_OK);
+	startMonstro(pBuf);
+
 	UnmapViewOfFile(pBuf);
 	CloseHandle(hMapFile);
 

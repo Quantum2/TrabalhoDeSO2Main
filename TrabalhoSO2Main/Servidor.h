@@ -9,7 +9,7 @@
 #include <iterator>
 #include "Utils.h"
 
-#define BUFSIZE 512
+#define BUFSIZE 1024
 
 class Servidor
 {

@@ -125,7 +125,6 @@ Jogador::~Jogador()
 
 Jogador::Jogador()
 {
-	hp=-100;
 }
 
 int Jogador::getPid()
@@ -186,9 +185,10 @@ void Jogador::setHP(int dano){
 
 int Jogador::atacar(Jogador j)
 {
-
-	{
-		if (getPedra()==false && getMachado()==false)
+	//fucking important
+	//FALTA verificar quem ou o que está na mesma posiçao q ele  !!!
+	//
+	if (getPedra()==false && getMachado()==false)
 		{
 			j.setHP(1);
 		}	
@@ -201,18 +201,16 @@ int Jogador::atacar(Jogador j)
 			//machado prevalece independentemente de pedra on ou off - tira 5 hp 
 			j.setHP(5);
 		}
-	}
-	
-	return 0;
+
+		return 0;
 } 
 
-Jogador Jogo::verificaVizinhos(Jogador j)
+void Jogo::quemEstaAqui(Jogador j)
 {
 	int x=j.getX();
 	int y=j.getY();
 
 	int x1,y1;
-
 
 	for (size_t i = 0; i < jogadores.size(); i++)
 	{
@@ -220,7 +218,51 @@ Jogador Jogo::verificaVizinhos(Jogador j)
 		x1=temp.getX();
 		y1=temp.getY();
 	
-		if ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) return temp;
+		if ( ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) && (temp.getAtacaAuto()))
+			j.atacar(temp);
 	}
-	return Jogador();
+}
+
+Monstro::Monstro()
+{
+	hp = 100;
+	visible = false;
+}
+
+int Monstro::getPosX()
+{
+	return posX;
+}
+
+int Monstro::getPosY()
+{
+	return posY;
+}
+
+int Monstro::getHP()
+{
+	return hp;
+}
+
+bool Monstro::getVisible()
+{
+	return visible;
+}
+
+void Monstro::setVisible(bool v)
+{
+	visible = v;
+}
+
+void Monstro::setHP(int h)
+{
+	hp = h;
+}
+
+void Monstro::setX(int x) {
+	posX = x;
+}
+
+void Monstro::setY(int y) {
+	posY = y;
 }

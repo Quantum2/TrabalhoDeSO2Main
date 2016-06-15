@@ -5,8 +5,8 @@ static mutex mtx;
 static bool enviarTodos = false;
 static Mensagem globalM;
 
-TCHAR szName[] = TEXT("Global\\MyFileMappingObject");
-TCHAR szMsg[] = TEXT("Message from first process.");
+MemoryShare m;
+TCHAR szName[] = TEXT("Local\\MyFileMappingObject");
 
 Servidor::Servidor()
 {
@@ -18,7 +18,7 @@ Servidor::~Servidor()
 
 int confMemPartilhada() {
 	HANDLE hMapFile;
-	LPCTSTR pBuf;
+	LPCSTR pBuf;
 
 	hMapFile = CreateFileMapping(
 		INVALID_HANDLE_VALUE,    // use paging file
@@ -34,7 +34,7 @@ int confMemPartilhada() {
 			GetLastError());
 		return 1;
 	}
-	pBuf = (LPTSTR)MapViewOfFile(hMapFile,   // handle to map object
+	pBuf = (LPCSTR)MapViewOfFile(hMapFile,   // handle to map object
 		FILE_MAP_ALL_ACCESS, // read/write permission
 		0,
 		0,
@@ -50,11 +50,12 @@ int confMemPartilhada() {
 		return 1;
 	}
 
+	m.monstrosLigados = 0;
+	CopyMemory((PVOID)pBuf, &m, sizeof(m));
 
-	CopyMemory((PVOID)pBuf, szMsg, (_tcslen(szMsg) * sizeof(TCHAR)));
-
+	/*
 	UnmapViewOfFile(pBuf);
-	CloseHandle(hMapFile);
+	CloseHandle(hMapFile);*/
 
 	return 0;
 }
@@ -65,7 +66,7 @@ int Servidor::loop() {
 	HANDLE hPipe = INVALID_HANDLE_VALUE, hPipeGeral = INVALID_HANDLE_VALUE, hThread = NULL, hThread2 = NULL;
 	LPTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
 
-	//confMemPartilhada();
+	confMemPartilhada();
 
 	// The main loop creates an instance of the named pipe and 
 	// then waits for a client to connect to it. When the client 

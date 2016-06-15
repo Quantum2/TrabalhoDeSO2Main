@@ -222,3 +222,47 @@ void Jogo::quemEstaAqui(Jogador j)
 			j.atacar(temp);
 	}
 }
+
+Monstro::Monstro()
+{
+	hp = 100;
+	visible = false;
+}
+
+int Monstro::getPosX()
+{
+	return posX;
+}
+
+int Monstro::getPosY()
+{
+	return posY;
+}
+
+int Monstro::getHP()
+{
+	return hp;
+}
+
+bool Monstro::getVisible()
+{
+	return visible;
+}
+
+void Monstro::setVisible(bool v)
+{
+	visible = v;
+}
+
+void Monstro::setHP(int h)
+{
+	hp = h;
+}
+
+void Monstro::setX(int x) {
+	posX = x;
+}
+
+void Monstro::setY(int y) {
+	posY = y;
+}

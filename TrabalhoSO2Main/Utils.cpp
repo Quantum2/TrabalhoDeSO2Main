@@ -128,6 +128,11 @@ Jogador::Jogador(string nome, int p, int vida)
 	
 }
 
+bool Jogador::operator==(Jogador & X)
+{
+	return name == X.name;
+}
+
 Jogador::~Jogador()
 {
 }
@@ -155,6 +160,11 @@ int Jogador::getX()
 int Jogador::getY()
 {
 	return posY;
+}
+
+string Jogador::getName()
+{
+	return name;
 }
 
 bool Jogador::getAtacaAuto() { return atacaAuto; }

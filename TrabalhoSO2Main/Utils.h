@@ -49,6 +49,7 @@ private:
 	int existeMachado=0;
 public:
 	Jogador(string nome, int p, int vida);
+	bool operator == (Jogador& X);
 	~Jogador();
 	Jogador();
 	int getHP();
@@ -67,6 +68,7 @@ public:
 	int atacar(Jogador j);
 	int getX();
 	int getY();
+	string getName();
 };
 
 class Labirinto

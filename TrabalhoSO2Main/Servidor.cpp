@@ -4,6 +4,7 @@ static Jogo jogo;
 static mutex mtx;
 static bool enviarTodos = false;
 static Mensagem globalM;
+static Registo registo;
 
 TCHAR szName[] = TEXT("Local\\MyFileMappingObject");
 
@@ -268,9 +269,31 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 
 	if (tokens[0] == "login") {
 		if (jogo.getEstado() == jogo.A_PROCURAR_CLIENTES) {
-			temp = "A fazer login...";
-			Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid, 100);              //construtor de jogador - 100 hp
-			jogo.adicionarJogador(*temp_jogar);
+			int decider = 1;
+
+			for (size_t i = 0; i < jogo.jogadores.size(); i++)
+			{
+				if (jogo.jogadores[i].getName() == tokens[1])
+				{
+					temp = "Jogador já existente, tente de novo";
+					decider = 0;
+				}
+			}
+			if (decider == 1)
+			{
+				if (registo.lerChavePassos(tokens[1]) == -1)
+				{
+					temp = "Jogador novo, bem vindo !";
+				}
+				else
+				{
+					temp = "Bem vindo de volta, já deu ";
+					temp.append(to_string(registo.lerChavePassos(tokens[1])));
+					temp.append(" passos");
+				}
+				Jogador* temp_jogar = new Jogador(tokens[1], pchRequest.pid, 100);              //construtor de jogador - 100 hp
+				jogo.adicionarJogador(*temp_jogar);
+			}
 		}
 		else {
 			temp = "O servidor já tem um jogo a decorrer ou a iniciar";
@@ -328,6 +351,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				int x= jogo.jogadores[i].getX();
 				x-=1;
 				jogo.jogadores[i].setPos(x, jogo.jogadores[i].getY());
+				registo.abreChave(jogo.jogadores[i].getName(), registo.lerChavePassos(jogo.jogadores[i].getName()) + 1, 0);
 			}
 		}
 		//actualiza
@@ -342,6 +366,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				int x = jogo.jogadores[i].getX();
 				x+= 1;
 				jogo.jogadores[i].setPos(x, jogo.jogadores[i].getY());
+				registo.abreChave(jogo.jogadores[i].getName(), registo.lerChavePassos(jogo.jogadores[i].getName()) + 1, 0);
 			}
 		}
 		//actualiza
@@ -356,6 +381,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				int y = jogo.jogadores[i].getY();
 				y += 1;
 				jogo.jogadores[i].setPos(jogo.jogadores[i].getX(), y);
+				registo.abreChave(jogo.jogadores[i].getName(), registo.lerChavePassos(jogo.jogadores[i].getName()) + 1, 0);
 			}
 		}
 		//actualiza
@@ -370,6 +396,7 @@ Mensagem Servidor::GetAnswerToRequest(Mensagem pchRequest, Mensagem pchReply, LP
 				int y = jogo.jogadores[i].getY();
 				y -= 1;
 				jogo.jogadores[i].setPos(jogo.jogadores[i].getX(), y);
+				registo.abreChave(jogo.jogadores[i].getName(), registo.lerChavePassos(jogo.jogadores[i].getName()) + 1, 0);
 			}
 		}
 		//actualiza

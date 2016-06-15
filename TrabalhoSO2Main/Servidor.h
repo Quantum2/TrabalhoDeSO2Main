@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include "Utils.h"
+#include "Registo.h"
 
 #define BUFSIZE 1024
 

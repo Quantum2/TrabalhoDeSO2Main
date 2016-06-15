@@ -78,6 +78,12 @@ public:
 	string mapa[TAM_LABIRINTO][TAM_LABIRINTO];
 };
 
+struct MemoryShare {
+	Monstro monstros[128];
+	int monstrosLigados;
+	int tamanhoMapa = TAM_LABIRINTO;
+};
+
 class Jogo {
 private:
 	int estado = 1;
@@ -88,6 +94,7 @@ public:
 
 	string lastCommand;
 	vector<Jogador> jogadores;
+	MemoryShare ms;
 	void adicionarJogador(Jogador j);
 
 	const int A_PROCURAR_CLIENTES = 1;
@@ -100,10 +107,4 @@ public:
 	void quemEstaAqui(Jogador j);
 
 	Mapa getCMap();
-};
-
-struct MemoryShare {
-	Monstro monstros[128];
-	int monstrosLigados;
-	int tamanhoMapa = TAM_LABIRINTO;
 };

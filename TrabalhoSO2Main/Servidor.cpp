@@ -5,7 +5,6 @@ static mutex mtx;
 static bool enviarTodos = false;
 static Mensagem globalM;
 
-MemoryShare m;
 TCHAR szName[] = TEXT("Local\\MyFileMappingObject");
 
 Servidor::Servidor()
@@ -50,8 +49,8 @@ int confMemPartilhada() {
 		return 1;
 	}
 
-	m.monstrosLigados = 0;
-	CopyMemory((PVOID)pBuf, &m, sizeof(m));
+	jogo.ms.monstrosLigados = 0;
+	CopyMemory((PVOID)pBuf, &jogo.ms, sizeof(jogo.ms));
 
 	/*
 	UnmapViewOfFile(pBuf);

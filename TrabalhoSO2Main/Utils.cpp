@@ -55,6 +55,10 @@ Mapa Jogo::getCMap() {
 			{
 				lab->mapa[i][j] = "_";
 			}
+			if (lab->mapa[i][j] == "M")
+			{
+				lab->mapa[i][j] == "_";
+			}
 		}
 	}
 
@@ -62,6 +66,11 @@ Mapa Jogo::getCMap() {
 	{
 		Jogador temp = jogadores[i];
 		lab->mapa[temp.getX()][temp.getY()] = "J";
+	}
+
+	for (size_t i = 0; i < ms.monstrosLigados; i++)
+	{
+		lab->mapa[ms.monstros[i].getPosX()][ms.monstros[i].getPosY()] = "M";
 	}
 
 	for (size_t i = 0; i < TAM_LABIRINTO; i++)
@@ -148,23 +157,24 @@ int Jogador::getY()
 	return posY;
 }
 
-bool Jogador::getAtacaAuto(){return atacaAuto;}
-void Jogador::setAtacaAuto(bool ataca) { atacaAuto=ataca; }
+bool Jogador::getAtacaAuto() { return atacaAuto; }
+void Jogador::setAtacaAuto(bool ataca) { atacaAuto = ataca; }
+
 void Jogador::toggleAtacaAuto()
 {
-	if(getAtacaAuto()) setAtacaAuto(false);
+	if (getAtacaAuto()) setAtacaAuto(false);
 	else setAtacaAuto(true);
 }
 
-bool Jogador::getPedra(){ return pedra;}
-bool Jogador::getMachado(){return machado;}
+bool Jogador::getPedra() { return pedra; }
+bool Jogador::getMachado() { return machado; }
 
-void Jogador::setPedra(bool p){pedra=p;}
+void Jogador::setPedra(bool p) { pedra = p; }
 void Jogador::setMachado(bool m) { machado = m; }
 
 void Jogador::togglePedra()
 {
-	if(getPedra()==false) setPedra(true);
+	if (getPedra() == false) setPedra(true);
 	else setPedra(false);
 
 }
@@ -173,7 +183,6 @@ void Jogador::toggleMachado()
 {
 	if (getMachado() == false) setMachado(true);
 	else setMachado(false);
-
 }
 
 int Jogador::getHP(){return hp;}
@@ -181,11 +190,10 @@ int Jogador::getHP(){return hp;}
 void Jogador::setHP(int dano){
 	hp=hp-dano; 
 	//if (hp<=0) morre();
-	}
+}
 
 int Jogador::atacar(Jogador j)
 {
-	//fucking important
 	//FALTA verificar quem ou o que está na mesma posiçao q ele  !!!
 	//
 	if (getPedra()==false && getMachado()==false)
@@ -209,7 +217,6 @@ void Jogo::quemEstaAqui(Jogador j)
 {
 	int x=j.getX();
 	int y=j.getY();
-
 	int x1,y1;
 
 	for (size_t i = 0; i < jogadores.size(); i++)

@@ -52,7 +52,7 @@ public:
 	Jogador(string nome, int p, int vida);
 	bool operator == (Jogador& X);
 	~Jogador();
-	Jogador();
+	Jogador(int v);
 	int getHP();
 	void setHP(int dano);
 	int getPid();

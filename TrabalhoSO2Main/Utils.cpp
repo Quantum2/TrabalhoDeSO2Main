@@ -205,7 +205,7 @@ int Jogador::atacar(Jogador j)
 		return 0;
 } 
 
-int Jogo::quemEstaAqui(Jogador j)
+void Jogo::quemEstaAqui(Jogador j)
 {
 	int x=j.getX();
 	int y=j.getY();

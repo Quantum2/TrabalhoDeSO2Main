@@ -125,6 +125,7 @@ Jogador::~Jogador()
 
 Jogador::Jogador()
 {
+	hp=-100;
 }
 
 int Jogador::getPid()
@@ -185,10 +186,9 @@ void Jogador::setHP(int dano){
 
 int Jogador::atacar(Jogador j)
 {
-	//fucking important
-	//FALTA verificar quem ou o que está na mesma posiçao q ele  !!!
-	//
-	if (getPedra()==false && getMachado()==false)
+
+	{
+		if (getPedra()==false && getMachado()==false)
 		{
 			j.setHP(1);
 		}	
@@ -201,16 +201,18 @@ int Jogador::atacar(Jogador j)
 			//machado prevalece independentemente de pedra on ou off - tira 5 hp 
 			j.setHP(5);
 		}
-
-		return 0;
+	}
+	
+	return 0;
 } 
 
-void Jogo::quemEstaAqui(Jogador j)
+Jogador Jogo::verificaVizinhos(Jogador j)
 {
 	int x=j.getX();
 	int y=j.getY();
 
 	int x1,y1;
+
 
 	for (size_t i = 0; i < jogadores.size(); i++)
 	{
@@ -218,7 +220,7 @@ void Jogo::quemEstaAqui(Jogador j)
 		x1=temp.getX();
 		y1=temp.getY();
 	
-		if ( ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) && (temp.getAtacaAuto()))
-			j.atacar(temp);
+		if ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) return temp;
 	}
+	return Jogador();
 }

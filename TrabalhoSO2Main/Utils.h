@@ -88,7 +88,7 @@ public:
 	void setEstado(int e);
 	int getEstado();
 
-	int quemEstaAqui(Jogador j);
+	void quemEstaAqui(Jogador j);
 
 	Mapa getCMap();
 };

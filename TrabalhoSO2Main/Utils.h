@@ -35,20 +35,26 @@ private:
 	int pedras[15];
 	bool pedra=false; // se vai atacar com pedra
 	bool machado=false;// se vai atacar com machado
+	bool atacaAuto=false; //se ataca automaticamente um inimigo/amigo na vizinhança
 	int existeMachado=0;
 public:
 	Jogador(string nome, int p, int vida);
 	~Jogador();
 	Jogador();
+	int getHP();
+	void setHP(int dano);
 	int getPid();
 	void setPos(int x, int y);
 	bool getPedra();
 	bool getMachado();
+	bool getAtacaAuto();
+	void setAtacaAuto(bool ataca);
+	void toggleAtacaAuto();
 	void setPedra(bool p);
 	void setMachado(bool m);
 	void togglePedra();
 	void toggleMachado();
-	int atacar();
+	int atacar(Jogador j);
 	int getX();
 	int getY();
 };

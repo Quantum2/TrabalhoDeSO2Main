@@ -148,6 +148,14 @@ int Jogador::getY()
 	return posY;
 }
 
+bool Jogador::getAtacaAuto(){return atacaAuto;}
+void Jogador::setAtacaAuto(bool ataca) { atacaAuto=ataca; }
+void Jogador::toggleAtacaAuto()
+{
+	if(getAtacaAuto()) setAtacaAuto(false);
+	else setAtacaAuto(true);
+}
+
 bool Jogador::getPedra(){ return pedra;}
 bool Jogador::getMachado(){return machado;}
 
@@ -168,22 +176,30 @@ void Jogador::toggleMachado()
 
 }
 
-int Jogador::atacar()
+int Jogador::getHP(){return hp;}
+
+void Jogador::setHP(int dano){
+	hp=hp-dano; 
+	//if (hp<=0) morre();
+	}
+
+int Jogador::atacar(Jogador j)
 {
 	//fucking important
 	//FALTA verificar quem ou o que está na mesma posiçao q ele  !!!
 	//
 	if (getPedra()==false && getMachado()==false)
 		{
-			//remover 1 hp ao outro jogador/monstro
+			j.setHP(1);
 		}	
 		else if ((getPedra() == true && getMachado() == false))
 		{
-			//~remover 2hp do outro jogador/monstro
+			j.setHP(2);
 		}
 		else if( (getPedra() == true && getMachado() == true) || (getPedra() == false && getMachado() == true))
 		{
 			//machado prevalece independentemente de pedra on ou off - tira 5 hp 
+			j.setHP(5);
 		}
 
 		return 0;
@@ -201,7 +217,8 @@ int Jogo::quemEstaAqui(Jogador j)
 		Jogador temp = jogadores[i];
 		x1=temp.getX();
 		y1=temp.getY();
-		if (x==x1 && y==y1)
-			return temp.getPid();
+	
+		if ( ((x1==x+1) || (x1 == x-1) || (y1 == y + 1) || (y1 == y - 1)) && (temp.getAtacaAuto()))
+			j.atacar(temp);
 	}
 }
